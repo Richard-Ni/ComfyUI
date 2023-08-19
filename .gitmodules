@@ -1,0 +1,3 @@
+[submodule "custom_node/ComfyUI_Noise"]
+	path = custom_nodes/ComfyUI_Noise
+	url = https://github.com/BlenderNeko/ComfyUI_Noise.git

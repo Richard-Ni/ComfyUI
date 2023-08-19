@@ -4,19 +4,23 @@ import comfy.samplers
 import math
 import numpy as np
 
-def prepare_noise(latent_image, seed, noise_inds=None):
+def prepare_noise(latent_image, seed, noise_inds=None, device="cpu"):
     """
     creates random noise given a latent image and a seed.
     optional arg skip can be used to skip and discard x number of noise generations for a given seed
     """
-    generator = torch.manual_seed(seed)
+    if device == "cpu":
+        generator = torch.manual_seed(seed)
+    else:
+        generator = torch.cuda.manual_seed(seed)
+
     if noise_inds is None:
-        return torch.randn(latent_image.size(), dtype=latent_image.dtype, layout=latent_image.layout, generator=generator, device="cpu")
+        return torch.randn(latent_image.size(), dtype=latent_image.dtype, layout=latent_image.layout, generator=generator, device=device)
     
     unique_inds, inverse = np.unique(noise_inds, return_inverse=True)
     noises = []
     for i in range(unique_inds[-1]+1):
-        noise = torch.randn([1] + list(latent_image.size())[1:], dtype=latent_image.dtype, layout=latent_image.layout, generator=generator, device="cpu")
+        noise = torch.randn([1] + list(latent_image.size())[1:], dtype=latent_image.dtype, layout=latent_image.layout, generator=generator, device=device)
         if i in unique_inds:
             noises.append(noise)
     noises = [noises[i] for i in inverse]
